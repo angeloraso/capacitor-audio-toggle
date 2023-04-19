@@ -1,3 +1,6 @@
+export type AudioDevice = 'earpiece' | 'speaker';
+
 export interface AudioTogglePlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  setAudioDevice(data: { device: AudioDevice }): Promise<void>;
+  reset(): Promise<void>;
 }

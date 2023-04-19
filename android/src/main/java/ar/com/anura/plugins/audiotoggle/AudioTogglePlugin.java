@@ -9,14 +9,36 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "AudioToggle")
 public class AudioTogglePlugin extends Plugin {
 
-    private AudioToggle implementation = new AudioToggle();
+    private AudioToggle audioToggle;
+
+    public void load() {
+        AppCompatActivity activity = getActivity();
+        Context context = getContext();
+        audioToggle = new AudioToggle(activity, context);
+    }
 
     @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
+    public void setAudioDevice(PluginCall call) {
+        if (getActivity().isFinishing()) {
+            call.reject("Audio toggle plugin error: App is finishing");
+            return;
+        }
 
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
+        String device = call.getString("device");
+        audioToggle.setAudioDevice(device);
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void reset(PluginCall call) {
+        if (getActivity().isFinishing()) {
+            call.reject("Audio toggle plugin error: App is finishing");
+            return;
+        }
+
+        audioToggle.reset();
+
+        call.resolve();
     }
 }

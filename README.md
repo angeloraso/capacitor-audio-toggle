@@ -13,25 +13,42 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`setAudioDevice(...)`](#setaudiodevice)
+* [`reset()`](#reset)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### setAudioDevice(...)
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+setAudioDevice(data: { device: AudioDevice; }) => Promise<void>
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+| Param      | Type                                                             |
+| ---------- | ---------------------------------------------------------------- |
+| **`data`** | <code>{ device: <a href="#audiodevice">AudioDevice</a>; }</code> |
 
 --------------------
+
+
+### reset()
+
+```typescript
+reset() => Promise<void>
+```
+
+--------------------
+
+
+### Type Aliases
+
+
+#### AudioDevice
+
+<code>'earpiece' | 'speaker'</code>
 
 </docgen-api>

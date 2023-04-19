@@ -1,10 +1,19 @@
 package ar.com.anura.plugins.audiotoggle;
 
+import android.content.Context;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class AudioToggle implements AudioManager.OnCommunicationDeviceChangedListener, AudioManager.OnModeChangedListener {
 
+    private static final String TAG = "Audio toggle";
     private Context context;
     private AppCompatActivity activity;
     private AudioManager audioManager = null;
@@ -13,9 +22,9 @@ public class AudioToggle implements AudioManager.OnCommunicationDeviceChangedLis
         this.activity = activity;
         this.context = context;
         if (this.audioManager == null) {
-            this.audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.addOnCommunicationDeviceChangedListener(getApplicationContext().getMainExecutor(), this);
-            audioManager.addOnModeChangedListener(getApplicationContext().getMainExecutor(), this);
+            this.audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.addOnCommunicationDeviceChangedListener(activity.getMainExecutor(), this);
+            audioManager.addOnModeChangedListener(activity.getMainExecutor(), this);
         }
     }
 

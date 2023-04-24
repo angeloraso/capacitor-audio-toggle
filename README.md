@@ -13,24 +13,23 @@ npx cap sync
 
 <docgen-index>
 
-* [`setAudioDevice(...)`](#setaudiodevice)
+* [`setSpeakerOn(...)`](#setspeakeron)
 * [`reset()`](#reset)
-* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### setAudioDevice(...)
+### setSpeakerOn(...)
 
 ```typescript
-setAudioDevice(data: { device: AudioDevice; }) => Promise<void>
+setSpeakerOn(data: { speakerOn: boolean; }) => Promise<void>
 ```
 
-| Param      | Type                                                             |
-| ---------- | ---------------------------------------------------------------- |
-| **`data`** | <code>{ device: <a href="#audiodevice">AudioDevice</a>; }</code> |
+| Param      | Type                                 |
+| ---------- | ------------------------------------ |
+| **`data`** | <code>{ speakerOn: boolean; }</code> |
 
 --------------------
 
@@ -42,13 +41,5 @@ reset() => Promise<void>
 ```
 
 --------------------
-
-
-### Type Aliases
-
-
-#### AudioDevice
-
-<code>'earpiece' | 'speaker'</code>
 
 </docgen-api>

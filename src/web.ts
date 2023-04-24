@@ -3,7 +3,7 @@ import { WebPlugin } from '@capacitor/core';
 import type { AudioTogglePlugin } from './definitions';
 
 export class AudioToggleWeb extends WebPlugin implements AudioTogglePlugin {
-  async setAudioDevice(): Promise<void> {
+  async setSpeakerOn(): Promise<void> {
     throw this.unimplemented('Not implemented on web.');
   } 
 

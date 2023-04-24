@@ -1,7 +1,5 @@
 package ar.com.anura.plugins.audiotoggle;
 
-import android.content.Context;
-import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -15,23 +13,18 @@ public class AudioTogglePlugin extends Plugin {
 
     public void load() {
         AppCompatActivity activity = getActivity();
-        Context context = getContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            audioToggle = new AudioToggle(activity, context);
-        }
+        audioToggle = new AudioToggle(activity);
     }
 
     @PluginMethod
-    public void setAudioDevice(PluginCall call) {
+    public void setSpeakerOn(PluginCall call) {
         if (getActivity().isFinishing()) {
             call.reject("Audio toggle plugin error: App is finishing");
             return;
         }
 
-        String device = call.getString("device");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            audioToggle.setAudioDevice(device);
-        }
+        String speakerOn = call.getString("speakerOn");
+        audioToggle.setSpeakerOn(speakerOn.equals("true"));
 
         call.resolve();
     }
@@ -43,9 +36,7 @@ public class AudioTogglePlugin extends Plugin {
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            audioToggle.reset();
-        }
+        audioToggle.reset();
 
         call.resolve();
     }

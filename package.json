@@ -1,6 +1,6 @@
 {
   "name": "@anuradev/capacitor-audio-toggle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Capacitor plugin to audio toggle",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

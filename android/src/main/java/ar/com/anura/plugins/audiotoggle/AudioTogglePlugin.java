@@ -23,8 +23,8 @@ public class AudioTogglePlugin extends Plugin {
             return;
         }
 
-        String speakerOn = call.getString("speakerOn");
-        audioToggle.setSpeakerOn(speakerOn.equals("true"));
+        Boolean speakerOn = call.getBoolean("speakerOn", false);
+        audioToggle.setSpeakerOn(speakerOn);
 
         call.resolve();
     }
@@ -39,5 +39,13 @@ public class AudioTogglePlugin extends Plugin {
         audioToggle.reset();
 
         call.resolve();
+    }
+
+    /**
+     * Called when the activity will be destroyed.
+     */
+    @Override
+    public void handleOnDestroy() {
+        audioToggle.onDestroy();
     }
 }

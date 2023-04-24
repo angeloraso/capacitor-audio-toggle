@@ -21,4 +21,8 @@ public class AudioToggle {
     public void reset() {
         audioManager.reset();
     }
+
+    public void onDestroy() {
+        audioManager.onDestroy();
+    }
 }

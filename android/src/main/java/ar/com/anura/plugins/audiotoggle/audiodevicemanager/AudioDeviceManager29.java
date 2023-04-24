@@ -1,5 +1,6 @@
 package ar.com.anura.plugins.audiotoggle.audiodevicemanager;
 
+import android.media.AudioManager;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,13 +12,18 @@ public class AudioDeviceManager29 extends AudioDeviceManager {
         super(activity);
     }
 
-    public void setAudioDevice(boolean speakerOn) {
+    public void setSpeakerOn(boolean speakerOn) {
         super.setAudioFocus(1000);
         audioManager.setSpeakerphoneOn(speakerOn);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
     }
 
     @Override
     public void reset() {
         super.reset();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

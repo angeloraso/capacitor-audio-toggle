@@ -1,6 +1,5 @@
 package ar.com.anura.plugins.audiotoggle.audiodevicemanager;
 
-import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Build;
@@ -8,8 +7,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -17,45 +14,19 @@ public class AudioDeviceManager33
     extends AudioDeviceManager
     implements AudioManager.OnCommunicationDeviceChangedListener, AudioManager.OnModeChangedListener {
 
-    List<AudioDeviceInfo> devices = new ArrayList<>();
-
     AudioDeviceManager33(final AppCompatActivity activity) {
         super(activity);
         audioManager.addOnCommunicationDeviceChangedListener(activity.getMainExecutor(), this);
         audioManager.addOnModeChangedListener(activity.getMainExecutor(), this);
-        final AudioDeviceCallback audioDeviceCallback = new AudioDeviceCallback() {
-            @Override
-            public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
-                devices.addAll(Arrays.asList(addedDevices));
-            }
-
-            @Override
-            public void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
-                for (AudioDeviceInfo device : removedDevices) {
-                    while (devices.contains(device)) {
-                        devices.remove(device);
-                    }
-                }
-            }
-        };
-
-        audioManager.registerAudioDeviceCallback(audioDeviceCallback, null);
     }
 
+    @Override
     public void setSpeakerOn(boolean speakerOn) {
         super.setAudioFocus(1300);
         boolean success = false;
 
         if (!speakerOn) {
-            boolean thereIsBluetooth = false;
-            for (AudioDeviceInfo device : devices) {
-                if (device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
-                    thereIsBluetooth = true;
-                    break;
-                }
-            }
-
-            if (thereIsBluetooth) {
+            if (isBluetoothConnected()) {
                 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 AudioDeviceInfo bluetoothDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
                 if (bluetoothDevice != null) {
@@ -69,15 +40,7 @@ public class AudioDeviceManager33
                 return;
             }
 
-            boolean thereIsWired = false;
-            for (AudioDeviceInfo device : devices) {
-                if (device.getType() == AudioDeviceInfo.TYPE_WIRED_HEADPHONES || device.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-                    thereIsWired = true;
-                    break;
-                }
-            }
-
-            if (thereIsWired) {
+            if (isWiredConnected()) {
                 audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 AudioDeviceInfo wiredHeadphonesDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADPHONES);
                 AudioDeviceInfo wiredHeadsetDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADSET);
@@ -124,6 +87,12 @@ public class AudioDeviceManager33
     public void reset() {
         super.reset();
         audioManager.clearCommunicationDevice();
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        audioManager.removeOnCommunicationDeviceChangedListener(this);
+        audioManager.removeOnModeChangedListener(this);
     }
 
     private void showCurrentAudioDevice() {

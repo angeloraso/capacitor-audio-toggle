@@ -122,7 +122,6 @@ public class AudioDeviceManager31
         String strMode = "";
         switch (iMode) {
             case AudioManager.MODE_NORMAL:
-                audioManager.clearCommunicationDevice();
                 strMode = "NORMAL";
                 break;
             case AudioManager.MODE_IN_COMMUNICATION:

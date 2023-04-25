@@ -74,8 +74,7 @@ public class AudioDeviceManager33
             if (speakerphoneDevice != null) {
                 success = audioManager.setCommunicationDevice(speakerphoneDevice);
                 if (success) {
-                    audioManager.setSpeakerphoneOn(true);
-                    audioManager.setMode(AudioManager.MODE_NORMAL);
+                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } else {
                     Log.d(TAG, "Speaker error");
                 }
@@ -129,7 +128,6 @@ public class AudioDeviceManager33
         String strMode = "";
         switch (iMode) {
             case AudioManager.MODE_NORMAL:
-                audioManager.clearCommunicationDevice();
                 strMode = "NORMAL";
                 break;
             case AudioManager.MODE_IN_COMMUNICATION:

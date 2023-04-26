@@ -29,15 +29,20 @@ public class AudioDeviceManager33
         if (!speakerOn) {
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
-            AudioDeviceInfo bluetoothDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
-            if (bluetoothDevice != null) {
-                success = audioManager.setCommunicationDevice(bluetoothDevice);
-                if (success) {
-                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                } else {
-                    Log.d(TAG, "Bluetooth error");
-                }
+            AudioDeviceInfo bluetoothScoDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
+            AudioDeviceInfo bluetoothAD2PDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
+            if (bluetoothScoDevice != null) {
+                success = audioManager.setCommunicationDevice(bluetoothScoDevice);
+            } else if (bluetoothAD2PDevice != null) {
+                success = audioManager.setCommunicationDevice(bluetoothAD2PDevice);
+            }
+
+            if (success) {
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 return;
+            } else {
+                Log.d(TAG, "Bluetooth error");
+                notifySpeakerStatus();
             }
 
             AudioDeviceInfo wiredHeadphonesDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADPHONES);
@@ -53,6 +58,7 @@ public class AudioDeviceManager33
                 return;
             } else {
                 Log.d(TAG, "Wired error");
+                notifySpeakerStatus();
             }
 
             AudioDeviceInfo earpieceDevice = getAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE);
@@ -62,6 +68,7 @@ public class AudioDeviceManager33
                     audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } else {
                     Log.d(TAG, "Earpiece error");
+                    notifySpeakerStatus();
                 }
             }
         } else {
@@ -73,6 +80,7 @@ public class AudioDeviceManager33
                     audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } else {
                     Log.d(TAG, "Speaker error");
+                    notifySpeakerStatus();
                 }
             }
         }

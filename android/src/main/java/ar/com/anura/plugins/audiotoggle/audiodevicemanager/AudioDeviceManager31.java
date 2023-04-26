@@ -46,6 +46,7 @@ public class AudioDeviceManager31
                     success = audioManager.setCommunicationDevice(earpieceDevice);
                     if (!success) {
                         Log.d(TAG, "Earpiece error");
+                        notifySpeakerStatus();
                     }
                 }
             }
@@ -57,7 +58,8 @@ public class AudioDeviceManager31
             } else if (
                 deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
                 deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
-                deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+                deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+                deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
             ) {
                 setSpeakerOn();
             }
@@ -87,10 +89,9 @@ public class AudioDeviceManager31
         AudioDeviceInfo speakerDevice = getAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER);
         if (speakerDevice != null) {
             boolean success = audioManager.setCommunicationDevice(speakerDevice);
-            if (success) {
-                audioManager.setSpeakerphoneOn(true);
-            } else {
+            if (!success) {
                 Log.d(TAG, "Speaker error");
+                notifySpeakerStatus();
             }
         }
     }
@@ -161,8 +162,9 @@ public class AudioDeviceManager31
     }
 
     private boolean isBluetoothConnected() {
-        AudioDeviceInfo bluetoothDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
-        return bluetoothDevice != null;
+        AudioDeviceInfo bluetoothScoDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
+        AudioDeviceInfo bluetoothA2DPDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
+        return (bluetoothScoDevice != null || bluetoothA2DPDevice != null);
     }
 
     private boolean isWiredConnected() {
@@ -173,7 +175,7 @@ public class AudioDeviceManager31
 
     private void notifySpeakerStatus() {
         boolean status = audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
-        Log.d(TAG, "Speaker status: " + status);
+        Log.d(TAG, "Speaker on: " + status);
         speakerChangeListener.speakerOn(status);
     }
 }

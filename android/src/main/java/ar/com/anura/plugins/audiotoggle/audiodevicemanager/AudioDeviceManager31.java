@@ -15,6 +15,7 @@ public class AudioDeviceManager31
     implements AudioDeviceManagerInterface, AudioManager.OnCommunicationDeviceChangedListener, AudioManager.OnModeChangedListener {
 
     private boolean first = true;
+    private boolean notified = false;
 
     AudioDeviceManager31(final AppCompatActivity activity) {
         super(activity);
@@ -25,7 +26,27 @@ public class AudioDeviceManager31
 
     @Override
     public void setSpeakerOn(boolean speakerOn) {
-        super.setAudioFocus(0);
+        notified = false;
+        Thread checkNotify = new Thread(
+            () -> {
+                try {
+                    Thread.sleep(3000);
+                    if (!notified) {
+                        notifySpeakerStatus();
+                    }
+                } catch (InterruptedException v) {
+                    System.out.println(v);
+                    notifySpeakerStatus();
+                }
+            }
+        );
+        checkNotify.start();
+
+        if (isBluetoothConnected()) {
+            super.setAudioFocus(1300);
+        } else {
+            super.setAudioFocus(0);
+        }
 
         if (first) {
             first = false;
@@ -55,12 +76,7 @@ public class AudioDeviceManager31
             if (deviceInfo.getType() == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) {
                 audioManager.clearCommunicationDevice();
                 audioManager.setMode(AudioManager.MODE_NORMAL);
-            } else if (
-                deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                deviceInfo.getType() == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
-                deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
-                deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
-            ) {
+            } else if (isWiredConnected() || isBluetoothConnected()) {
                 setSpeakerOn();
             }
         }
@@ -98,7 +114,9 @@ public class AudioDeviceManager31
 
     @Override
     public void onCommunicationDeviceChanged(@Nullable AudioDeviceInfo audioDeviceInfo) {
-        Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
+        if (audioDeviceInfo != null) {
+            Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
+        }
         showCurrentAudioDevice();
         notifySpeakerStatus();
     }
@@ -174,8 +192,13 @@ public class AudioDeviceManager31
     }
 
     private void notifySpeakerStatus() {
-        boolean status = audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
+        AudioDeviceInfo communicationDevice = audioManager.getCommunicationDevice();
+        boolean status = false;
+        if (communicationDevice != null) {
+            status = communicationDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
+        }
         Log.d(TAG, "Speaker on: " + status);
         speakerChangeListener.speakerOn(status);
+        notified = true;
     }
 }

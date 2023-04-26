@@ -15,7 +15,6 @@ public abstract class AudioDeviceManager {
     protected static final String TAG = "Audio Device Manager";
     protected AudioManager audioManager = null;
     private int savedMode;
-    private boolean savedSpeakerphone;
     private boolean savedMicrophone;
     private AudioDeviceCallback audioDeviceCallback;
 
@@ -55,7 +54,6 @@ public abstract class AudioDeviceManager {
 
                 int res = audioManager.requestAudioFocus(audioRequest);
                 if (res == AUDIOFOCUS_REQUEST_GRANTED) {
-                    savedSpeakerphone = audioManager.isSpeakerphoneOn();
                     savedMode = audioManager.getMode();
                     savedMicrophone = audioManager.isMicrophoneMute();
                     audioManager.setMicrophoneMute(false);
@@ -70,7 +68,6 @@ public abstract class AudioDeviceManager {
 
     protected void reset() {
         audioManager.setMode(savedMode);
-        audioManager.setSpeakerphoneOn(savedSpeakerphone);
         audioManager.setMicrophoneMute(savedMicrophone);
         if (audioRequest != null) {
             int res = audioManager.abandonAudioFocusRequest(audioRequest);

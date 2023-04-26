@@ -172,6 +172,8 @@ public class AudioDeviceManager31
     }
 
     private void notifySpeakerStatus() {
-        speakerChangeListener.speakerOn(audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BLE_SPEAKER);
+        boolean status = audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
+        Log.d(TAG, "Speaker status: " + status);
+        speakerChangeListener.speakerOn(status);
     }
 }

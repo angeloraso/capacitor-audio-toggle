@@ -15,6 +15,9 @@ npx cap sync
 
 * [`setSpeakerOn(...)`](#setspeakeron)
 * [`reset()`](#reset)
+* [`addListener('speakerOn', ...)`](#addlistenerspeakeron)
+* [`removeAllListeners()`](#removealllisteners)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -41,5 +44,40 @@ reset() => Promise<void>
 ```
 
 --------------------
+
+
+### addListener('speakerOn', ...)
+
+```typescript
+addListener(eventName: 'speakerOn', listenerFunc: (data: { status: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                 |
+| ------------------ | ---------------------------------------------------- |
+| **`eventName`**    | <code>'speakerOn'</code>                             |
+| **`listenerFunc`** | <code>(data: { status: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
+
+--------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>

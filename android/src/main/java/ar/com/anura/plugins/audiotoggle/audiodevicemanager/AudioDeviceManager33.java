@@ -12,10 +12,11 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class AudioDeviceManager33
     extends AudioDeviceManager
-    implements AudioManager.OnCommunicationDeviceChangedListener, AudioManager.OnModeChangedListener {
+    implements AudioDeviceManagerInterface, AudioManager.OnCommunicationDeviceChangedListener, AudioManager.OnModeChangedListener {
 
     AudioDeviceManager33(final AppCompatActivity activity) {
         super(activity);
+        registerAudioDeviceCallbacks(this::onAudioDevicesAdded, this::onAudioDevicesRemoved);
         audioManager.addOnCommunicationDeviceChangedListener(activity.getMainExecutor(), this);
         audioManager.addOnModeChangedListener(activity.getMainExecutor(), this);
     }
@@ -26,39 +27,34 @@ public class AudioDeviceManager33
         boolean success = false;
 
         if (!speakerOn) {
-            if (isBluetoothConnected()) {
-                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                AudioDeviceInfo bluetoothDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
-                if (bluetoothDevice != null) {
-                    success = audioManager.setCommunicationDevice(bluetoothDevice);
-                    if (success) {
-                        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                    } else {
-                        Log.d(TAG, "Bluetooth error");
-                    }
-                }
-                return;
-            }
+            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
 
-            if (isWiredConnected()) {
-                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                AudioDeviceInfo wiredHeadphonesDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADPHONES);
-                AudioDeviceInfo wiredHeadsetDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADSET);
-                if (wiredHeadphonesDevice != null) {
-                    success = audioManager.setCommunicationDevice(wiredHeadphonesDevice);
-                } else if (wiredHeadsetDevice != null) {
-                    success = audioManager.setCommunicationDevice(wiredHeadsetDevice);
-                }
-
+            AudioDeviceInfo bluetoothDevice = getAudioDevice(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
+            if (bluetoothDevice != null) {
+                success = audioManager.setCommunicationDevice(bluetoothDevice);
                 if (success) {
                     audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } else {
-                    Log.d(TAG, "Wired error");
+                    Log.d(TAG, "Bluetooth error");
                 }
                 return;
             }
 
-            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            AudioDeviceInfo wiredHeadphonesDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADPHONES);
+            AudioDeviceInfo wiredHeadsetDevice = getAudioDevice(AudioDeviceInfo.TYPE_WIRED_HEADSET);
+            if (wiredHeadphonesDevice != null) {
+                success = audioManager.setCommunicationDevice(wiredHeadphonesDevice);
+            } else if (wiredHeadsetDevice != null) {
+                success = audioManager.setCommunicationDevice(wiredHeadsetDevice);
+            }
+
+            if (success) {
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                return;
+            } else {
+                Log.d(TAG, "Wired error");
+            }
+
             AudioDeviceInfo earpieceDevice = getAudioDevice(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE);
             if (earpieceDevice != null) {
                 success = audioManager.setCommunicationDevice(earpieceDevice);
@@ -86,12 +82,24 @@ public class AudioDeviceManager33
     public void reset() {
         super.reset();
         audioManager.clearCommunicationDevice();
+        notifySpeakerStatus();
     }
 
     public void onDestroy() {
         super.onDestroy();
         audioManager.removeOnCommunicationDeviceChangedListener(this);
         audioManager.removeOnModeChangedListener(this);
+    }
+
+    public void setSpeakerChangeListener(AudioDeviceManagerListener speakerChangeListener) {
+        super.setSpeakerChangeListener(speakerChangeListener);
+    }
+
+    @Override
+    public void onCommunicationDeviceChanged(@Nullable AudioDeviceInfo audioDeviceInfo) {
+        Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
+        showCurrentAudioDevice();
+        notifySpeakerStatus();
     }
 
     private void showCurrentAudioDevice() {
@@ -114,14 +122,9 @@ public class AudioDeviceManager33
     }
 
     @Override
-    public void onCommunicationDeviceChanged(@Nullable AudioDeviceInfo audioDeviceInfo) {
-        Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
-        showCurrentAudioDevice();
-    }
-
-    @Override
     public void onModeChanged(int iMode) {
         showMode(iMode);
+        notifySpeakerStatus();
     }
 
     private void showMode(int iMode) {
@@ -147,5 +150,17 @@ public class AudioDeviceManager33
         }
 
         return null;
+    }
+
+    private void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
+        notifySpeakerStatus();
+    }
+
+    private void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
+        notifySpeakerStatus();
+    }
+
+    private void notifySpeakerStatus() {
+        speakerChangeListener.speakerOn(audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BLE_SPEAKER);
     }
 }

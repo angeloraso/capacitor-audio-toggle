@@ -1,6 +1,7 @@
 package ar.com.anura.plugins.audiotoggle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -14,6 +15,16 @@ public class AudioTogglePlugin extends Plugin {
     public void load() {
         AppCompatActivity activity = getActivity();
         audioToggle = new AudioToggle(activity);
+        audioToggle.setAudioToggleEventListener(this::onAudioToggleEvent);
+    }
+
+    private void onAudioToggleEvent(boolean speakerOn) {
+        JSObject res = new JSObject();
+
+        res.put("status", speakerOn);
+
+        bridge.triggerWindowJSEvent("speakerOn");
+        notifyListeners("speakerOn", res);
     }
 
     @PluginMethod

@@ -73,7 +73,7 @@ public class AudioDeviceManager31
             }
         } else {
             AudioDeviceInfo deviceInfo = audioManager.getCommunicationDevice();
-            if (deviceInfo.getType() == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) {
+            if (deviceInfo != null && deviceInfo.getType() == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) {
                 audioManager.clearCommunicationDevice();
                 audioManager.setMode(AudioManager.MODE_NORMAL);
             } else if (isWiredConnected() || isBluetoothConnected()) {
@@ -192,8 +192,8 @@ public class AudioDeviceManager31
     }
 
     private void notifySpeakerStatus() {
-        AudioDeviceInfo communicationDevice = audioManager.getCommunicationDevice();
         boolean status = false;
+        AudioDeviceInfo communicationDevice = audioManager.getCommunicationDevice();
         if (communicationDevice != null) {
             status = communicationDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
         }

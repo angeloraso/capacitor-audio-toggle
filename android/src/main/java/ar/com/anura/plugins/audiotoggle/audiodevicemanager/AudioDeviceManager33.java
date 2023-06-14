@@ -105,7 +105,9 @@ public class AudioDeviceManager33
 
     @Override
     public void onCommunicationDeviceChanged(@Nullable AudioDeviceInfo audioDeviceInfo) {
-        Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
+        if (audioDeviceInfo != null) {
+            Log.d(TAG, "Device changed: " + audioDeviceInfo.getType());
+        }
         showCurrentAudioDevice();
         notifySpeakerStatus();
     }
@@ -169,7 +171,12 @@ public class AudioDeviceManager33
     }
 
     private void notifySpeakerStatus() {
-        boolean status = audioManager.getCommunicationDevice().getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
+        boolean status = false;
+        AudioDeviceInfo communicationDevice = audioManager.getCommunicationDevice();
+        if (communicationDevice != null) {
+            status = communicationDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
+        }
+
         Log.d(TAG, "Speaker status: " + status);
         speakerChangeListener.speakerOn(status);
     }

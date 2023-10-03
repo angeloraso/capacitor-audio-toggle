@@ -5,9 +5,17 @@ import android.media.AudioManager;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDeviceManagerInterface {
+
+    final long delay = 0;
+    final long interval = 500;
+    boolean turnOn = false;
+    Timer timer;
+    TimerTask task;
 
     AudioDeviceManager29(final AppCompatActivity activity) {
         super(activity);
@@ -15,10 +23,22 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
     }
 
     public void setSpeakerOn(boolean speakerOn) {
-        super.setAudioFocus(1000);
-        audioManager.setSpeakerphoneOn(speakerOn);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
-        notifySpeakerStatus();
+        this.turnOn = speakerOn;
+        if (timer == null) {
+            timer = new Timer();
+            task =
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        setAudioFocus(1000);
+                        audioManager.setSpeakerphoneOn(turnOn);
+                        audioManager.setMode(AudioManager.MODE_NORMAL);
+                        notifySpeakerStatus();
+                    }
+                };
+
+            timer.scheduleAtFixedRate(task, delay, interval);
+        }
     }
 
     public void reset() {

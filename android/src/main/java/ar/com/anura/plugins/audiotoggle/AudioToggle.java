@@ -1,6 +1,5 @@
 package ar.com.anura.plugins.audiotoggle;
 
-import static android.media.AudioManager.STREAM_MUSIC;
 import static android.media.AudioManager.STREAM_VOICE_CALL;
 
 import androidx.appcompat.app.AppCompatActivity;

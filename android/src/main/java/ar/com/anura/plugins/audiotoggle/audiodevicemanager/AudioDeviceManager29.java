@@ -42,11 +42,13 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
     }
 
     public void reset() {
+        stopTimer();
         super.reset();
         notifySpeakerStatus();
     }
 
     public void onDestroy() {
+        stopTimer();
         super.onDestroy();
     }
 
@@ -64,5 +66,10 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
 
     private void notifySpeakerStatus() {
         speakerChangeListener.speakerOn(audioManager.isSpeakerphoneOn());
+    }
+
+    private void stopTimer() {
+        timer.cancel();
+        timer = null;
     }
 }

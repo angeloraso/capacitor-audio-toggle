@@ -69,7 +69,9 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
     }
 
     private void stopTimer() {
-        timer.cancel();
-        timer = null;
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 }

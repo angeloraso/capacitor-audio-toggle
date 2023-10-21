@@ -205,7 +205,9 @@ public class AudioDeviceManager33
     }
 
     private void stopTimer() {
-        timer.cancel();
-        timer = null;
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
     }
 }

@@ -49,7 +49,7 @@ reset() => Promise<void>
 ### addListener('speakerOn', ...)
 
 ```typescript
-addListener(eventName: 'speakerOn', listenerFunc: (data: { status: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'speakerOn', listenerFunc: (data: { status: boolean; }) => void) => Promise<PluginListenerHandle>
 ```
 
 | Param              | Type                                                 |
@@ -57,7 +57,7 @@ addListener(eventName: 'speakerOn', listenerFunc: (data: { status: boolean; }) =
 | **`eventName`**    | <code>'speakerOn'</code>                             |
 | **`listenerFunc`** | <code>(data: { status: boolean; }) =&gt; void</code> |
 
-**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
 --------------------
 

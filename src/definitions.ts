@@ -6,6 +6,6 @@ export interface AudioTogglePlugin {
   addListener(
     eventName: 'speakerOn',
     listenerFunc: (data: {status: boolean}) => void,
-  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  ): Promise<PluginListenerHandle>;
   removeAllListeners(): Promise<void>;
 }

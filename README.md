@@ -15,7 +15,7 @@ npx cap sync
 
 * [`setSpeakerOn(...)`](#setspeakeron)
 * [`reset()`](#reset)
-* [`addListener('speakerOn', ...)`](#addlistenerspeakeron)
+* [`addListener('speakerOn', ...)`](#addlistenerspeakeron-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 

@@ -27,11 +27,11 @@ public class AudioToggle {
 
     AudioToggle(final AppCompatActivity activity) {
         this.activity = activity;
+        this.audioManager = AudioDeviceManagerService.get(activity);
     }
 
     public void start() {
         this.savedStreamVolume = activity.getVolumeControlStream();
-        this.audioManager = AudioDeviceManagerService.get(activity);
 
         volumeReceiver = new VolumeChangeReceiver();
         IntentFilter filter = new IntentFilter("android.media.VOLUME_CHANGED_ACTION");
@@ -43,6 +43,7 @@ public class AudioToggle {
         activity.setVolumeControlStream(savedStreamVolume);
         audioManager.onDestroy();
         audioManager = null;
+
         if (volumeReceiver != null) {
             activity.getApplicationContext().unregisterReceiver(volumeReceiver);
             volumeReceiver = null;

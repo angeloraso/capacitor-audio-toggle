@@ -18,6 +18,10 @@ public class AudioDeviceManager33
 
     AudioDeviceManager33(final AppCompatActivity activity) {
         super(activity);
+    }
+
+    public void start(AudioDeviceManagerListener listener) {
+        super.start(listener);
         registerAudioDeviceCallbacks(this::onAudioDevicesAdded, this::onAudioDevicesRemoved);
         audioManager.addOnCommunicationDeviceChangedListener(activity.getMainExecutor(), this);
         audioManager.addOnModeChangedListener(activity.getMainExecutor(), this);
@@ -103,27 +107,18 @@ public class AudioDeviceManager33
                     }
                 };
 
-            timer.scheduleAtFixedRate(task, delay, interval);
+            timer.schedule(task, delay, interval);
         }
     }
 
     @Override
-    public void reset() {
+    public void stop() {
+        super.stop();
         stopTimer();
-        super.reset();
         audioManager.clearCommunicationDevice();
-        notifySpeakerStatus();
-    }
-
-    public void onDestroy() {
-        stopTimer();
-        super.onDestroy();
         audioManager.removeOnCommunicationDeviceChangedListener(this);
         audioManager.removeOnModeChangedListener(this);
-    }
-
-    public void setSpeakerChangeListener(AudioDeviceManagerListener speakerChangeListener) {
-        super.setSpeakerChangeListener(speakerChangeListener);
+        notifySpeakerStatus();
     }
 
     @Override
@@ -161,18 +156,11 @@ public class AudioDeviceManager33
     }
 
     private void showMode(int iMode) {
-        String strMode = "";
-        switch (iMode) {
-            case AudioManager.MODE_NORMAL:
-                strMode = "NORMAL";
-                break;
-            case AudioManager.MODE_IN_COMMUNICATION:
-                strMode = "IN_COMMUNICATION";
-                break;
-            default:
-                strMode = "Other: " + iMode;
-                break;
-        }
+        String strMode = switch (iMode) {
+            case AudioManager.MODE_NORMAL -> "NORMAL";
+            case AudioManager.MODE_IN_COMMUNICATION -> "IN_COMMUNICATION";
+            default -> "Other: " + iMode;
+        };
         Log.d(TAG, "Mode changed: " + strMode);
     }
 

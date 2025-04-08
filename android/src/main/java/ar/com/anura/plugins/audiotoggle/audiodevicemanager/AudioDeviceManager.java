@@ -1,6 +1,7 @@
 package ar.com.anura.plugins.audiotoggle.audiodevicemanager;
 
 import static android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+import static android.media.AudioManager.STREAM_VOICE_CALL;
 
 import android.content.Context;
 import android.media.AudioDeviceCallback;
@@ -10,10 +11,13 @@ import android.media.AudioManager;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
+
 public abstract class AudioDeviceManager {
 
     protected static final String TAG = "Audio Device Manager";
     protected AudioManager audioManager = null;
+    protected AppCompatActivity activity = null;
     private int savedMode;
     private boolean savedMicrophone;
     private AudioDeviceCallback audioDeviceCallback;
@@ -22,10 +26,23 @@ public abstract class AudioDeviceManager {
 
     private AudioFocusRequest audioRequest = null;
 
+    private int savedStreamVolume;
+
     AudioDeviceManager(final AppCompatActivity activity) {
+        this.activity = activity;
         if (this.audioManager == null) {
             this.audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         }
+    }
+
+    protected void start(AudioDeviceManagerListener speakerChangeListener) {
+        this.speakerChangeListener = speakerChangeListener;
+
+        savedStreamVolume = activity.getVolumeControlStream();
+        activity.setVolumeControlStream(STREAM_VOICE_CALL);
+
+        savedMode = audioManager.getMode();
+        savedMicrophone = audioManager.isMicrophoneMute();
     }
 
     protected void registerAudioDeviceCallbacks(AudioDevicesChanged onAudioDevicesAdded, AudioDevicesChanged onAudioDevicesRemoved) {
@@ -33,13 +50,13 @@ public abstract class AudioDeviceManager {
             new AudioDeviceCallback() {
                 @Override
                 public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
-                    Log.d(TAG, "Added devices: " + addedDevices);
+                    Log.d(TAG, "Added devices: " + Arrays.toString(addedDevices));
                     onAudioDevicesAdded.on(addedDevices);
                 }
 
                 @Override
                 public void onAudioDevicesRemoved(AudioDeviceInfo[] removedDevices) {
-                    Log.d(TAG, "Removed devices: " + removedDevices);
+                    Log.d(TAG, "Removed devices: " + Arrays.toString(removedDevices));
                     onAudioDevicesRemoved.on(removedDevices);
                 }
             };
@@ -51,38 +68,29 @@ public abstract class AudioDeviceManager {
             try {
                 Thread.sleep(sleep);
                 this.audioRequest = AudioDeviceFocusRequest.get();
-
                 int res = audioManager.requestAudioFocus(audioRequest);
                 if (res == AUDIOFOCUS_REQUEST_GRANTED) {
-                    savedMode = audioManager.getMode();
-                    savedMicrophone = audioManager.isMicrophoneMute();
                     audioManager.setMicrophoneMute(false);
                     audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 }
             } catch (InterruptedException e) {
                 Log.d(TAG, "Set focus error");
-                e.printStackTrace();
             }
         }
     }
 
-    protected void reset() {
-        audioManager.setMode(savedMode);
-        audioManager.setMicrophoneMute(savedMicrophone);
+    protected void stop() {
         if (audioRequest != null) {
             int res = audioManager.abandonAudioFocusRequest(audioRequest);
             if (res == AUDIOFOCUS_REQUEST_GRANTED) {
                 audioRequest = null;
             }
         }
-    }
 
-    protected void setSpeakerChangeListener(AudioDeviceManagerListener speakerChangeListener) {
-        this.speakerChangeListener = speakerChangeListener;
-    }
-
-    protected void onDestroy() {
-        reset();
         audioManager.unregisterAudioDeviceCallback(audioDeviceCallback);
+        audioManager.setMode(savedMode);
+        audioManager.setMicrophoneMute(savedMicrophone);
+        activity.setVolumeControlStream(savedStreamVolume);
     }
+
 }

@@ -1,7 +1,5 @@
 package ar.com.anura.plugins.audiotoggle;
 
-import static android.media.AudioManager.STREAM_VOICE_CALL;
-
 import android.content.IntentFilter;
 
 import androidx.annotation.Nullable;
@@ -21,28 +19,28 @@ public class AudioToggle {
     static public VolumeChangeEventListener volumeChangeEventListener;
 
     final AppCompatActivity activity;
-    private int savedStreamVolume;
     private AudioDeviceManagerInterface audioManager;
     private VolumeChangeReceiver volumeReceiver;
 
     AudioToggle(final AppCompatActivity activity) {
         this.activity = activity;
-        this.audioManager = AudioDeviceManagerService.get(activity);
     }
 
-    public void start() {
-        this.savedStreamVolume = activity.getVolumeControlStream();
+    public void start(AudioDeviceManagerListener audioDeviceManagerListener, VolumeChangeEventListener volumeChangeEventListener) {
+        this.audioManager = AudioDeviceManagerService.get(activity);
+        this.audioManager.start(audioDeviceManagerListener);
 
         volumeReceiver = new VolumeChangeReceiver();
         IntentFilter filter = new IntentFilter("android.media.VOLUME_CHANGED_ACTION");
         activity.getApplicationContext().registerReceiver(volumeReceiver, filter);
+        setVolumeChangeEventListener(volumeChangeEventListener);
     }
 
     public void stop() {
-        audioManager.reset();
-        activity.setVolumeControlStream(savedStreamVolume);
-        audioManager.onDestroy();
-        audioManager = null;
+        if (audioManager != null) {
+            audioManager.stop();
+            audioManager = null;
+        }
 
         if (volumeReceiver != null) {
             activity.getApplicationContext().unregisterReceiver(volumeReceiver);
@@ -50,17 +48,14 @@ public class AudioToggle {
         }
     }
 
-    public void setSpeakerStatusEventListener(AudioDeviceManagerListener listener) {
-        audioManager.setSpeakerChangeListener(listener);
-    }
-
-    public void setVolumeChangeEventListener(VolumeChangeEventListener listener) {
+    private void setVolumeChangeEventListener(VolumeChangeEventListener listener) {
         volumeChangeEventListener = listener;
     }
 
     public void setSpeakerOn(boolean turnOn) {
-        audioManager.setSpeakerOn(turnOn);
-        activity.setVolumeControlStream(STREAM_VOICE_CALL);
+        if (audioManager != null) {
+            audioManager.setSpeakerOn(turnOn);
+        }
     }
 
     public void onDestroy() {

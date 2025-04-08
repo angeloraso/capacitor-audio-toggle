@@ -2,13 +2,10 @@ package ar.com.anura.plugins.audiotoggle.audiodevicemanager;
 
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
-import android.os.Build;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Timer;
 import java.util.TimerTask;
 
-@RequiresApi(api = Build.VERSION_CODES.Q)
 public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDeviceManagerInterface {
 
     final long delay = 0;
@@ -19,6 +16,10 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
 
     AudioDeviceManager29(final AppCompatActivity activity) {
         super(activity);
+    }
+
+    public void start(AudioDeviceManagerListener listener) {
+        super.start(listener);
         registerAudioDeviceCallbacks(this::onAudioDevicesAdded, this::onAudioDevicesRemoved);
     }
 
@@ -37,23 +38,14 @@ public class AudioDeviceManager29 extends AudioDeviceManager implements AudioDev
                     }
                 };
 
-            timer.scheduleAtFixedRate(task, delay, interval);
+            timer.schedule(task, delay, interval);
         }
     }
 
-    public void reset() {
+    public void stop() {
         stopTimer();
-        super.reset();
+        super.stop();
         notifySpeakerStatus();
-    }
-
-    public void onDestroy() {
-        stopTimer();
-        super.onDestroy();
-    }
-
-    public void setSpeakerChangeListener(AudioDeviceManagerListener speakerChangeListener) {
-        super.setSpeakerChangeListener(speakerChangeListener);
     }
 
     private void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {

@@ -14,10 +14,6 @@ public class AudioDeviceManagerService {
             return new AudioDeviceManager31(activity);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return new AudioDeviceManager29(activity);
-        }
-
-        return null;
+        return new AudioDeviceManager29(activity);
     }
 }

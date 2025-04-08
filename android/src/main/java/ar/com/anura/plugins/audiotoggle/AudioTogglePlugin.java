@@ -44,9 +44,7 @@ public class AudioTogglePlugin extends Plugin {
             return;
         }
 
-        audioToggle.start();
-        audioToggle.setSpeakerStatusEventListener(this::onSpeakerStatusEventListener);
-        audioToggle.setVolumeChangeEventListener(this::onValueChangeEventListener);
+        audioToggle.start(this::onSpeakerStatusEventListener, this::onValueChangeEventListener);
 
         call.resolve();
     }
@@ -70,7 +68,7 @@ public class AudioTogglePlugin extends Plugin {
         }
 
         Boolean speakerOn = call.getBoolean("speakerOn", false);
-        audioToggle.setSpeakerOn(speakerOn);
+        audioToggle.setSpeakerOn(Boolean.TRUE.equals(speakerOn));
 
         call.resolve();
     }

@@ -14,8 +14,10 @@ npx cap sync
 <docgen-index>
 
 * [`setSpeakerOn(...)`](#setspeakeron)
-* [`reset()`](#reset)
+* [`start()`](#start)
+* [`stop()`](#stop)
 * [`addListener('speakerOn', ...)`](#addlistenerspeakeron-)
+* [`addListener('volumeChange', ...)`](#addlistenervolumechange-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
@@ -37,10 +39,19 @@ setSpeakerOn(data: { speakerOn: boolean; }) => Promise<void>
 --------------------
 
 
-### reset()
+### start()
 
 ```typescript
-reset() => Promise<void>
+start() => Promise<void>
+```
+
+--------------------
+
+
+### stop()
+
+```typescript
+stop() => Promise<void>
 ```
 
 --------------------
@@ -56,6 +67,22 @@ addListener(eventName: 'speakerOn', listenerFunc: (data: { status: boolean; }) =
 | ------------------ | ---------------------------------------------------- |
 | **`eventName`**    | <code>'speakerOn'</code>                             |
 | **`listenerFunc`** | <code>(data: { status: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('volumeChange', ...)
+
+```typescript
+addListener(eventName: 'volumeChange', listenerFunc: (data: { streamType: number; newVolume: number; oldVolume: number; }) => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'volumeChange'</code>                                                                   |
+| **`listenerFunc`** | <code>(data: { streamType: number; newVolume: number; oldVolume: number; }) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 

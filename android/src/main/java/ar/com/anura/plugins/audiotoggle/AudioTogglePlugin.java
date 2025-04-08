@@ -15,16 +15,51 @@ public class AudioTogglePlugin extends Plugin {
     public void load() {
         AppCompatActivity activity = getActivity();
         audioToggle = new AudioToggle(activity);
-        audioToggle.setAudioToggleEventListener(this::onAudioToggleEvent);
     }
 
-    private void onAudioToggleEvent(boolean speakerOn) {
+    private void onSpeakerStatusEventListener(boolean speakerOn) {
         JSObject res = new JSObject();
 
         res.put("status", speakerOn);
 
         bridge.triggerWindowJSEvent("speakerOn");
         notifyListeners("speakerOn", res);
+    }
+
+    private void onValueChangeEventListener(Integer streamType, Integer newVolume, Integer oldVolume) {
+        JSObject res = new JSObject();
+
+        res.put("streamType", streamType);
+        res.put("newVolume", newVolume);
+        res.put("oldVolume", oldVolume);
+
+        bridge.triggerWindowJSEvent("volumeChange");
+        notifyListeners("volumeChange", res);
+    }
+
+    @PluginMethod
+    public void start(PluginCall call) {
+        if (getActivity().isFinishing()) {
+            call.reject("Audio toggle plugin error: App is finishing");
+            return;
+        }
+
+        audioToggle.start();
+        audioToggle.setSpeakerStatusEventListener(this::onSpeakerStatusEventListener);
+        audioToggle.setVolumeChangeEventListener(this::onValueChangeEventListener);
+
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void stop(PluginCall call) {
+        if (getActivity().isFinishing()) {
+            call.reject("Audio toggle plugin error: App is finishing");
+            return;
+        }
+
+        audioToggle.stop();
+        call.resolve();
     }
 
     @PluginMethod
@@ -36,18 +71,6 @@ public class AudioTogglePlugin extends Plugin {
 
         Boolean speakerOn = call.getBoolean("speakerOn", false);
         audioToggle.setSpeakerOn(speakerOn);
-
-        call.resolve();
-    }
-
-    @PluginMethod
-    public void reset(PluginCall call) {
-        if (getActivity().isFinishing()) {
-            call.reject("Audio toggle plugin error: App is finishing");
-            return;
-        }
-
-        audioToggle.reset();
 
         call.resolve();
     }
